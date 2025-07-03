@@ -1,0 +1,97 @@
+# KubeCon CSP Pricing Configuration
+
+naver:
+  name: "Naver Cloud Platform"
+  api_url: "https://ncloud.apigw.ntruss.com"
+  default_currency: "KRW"
+  regions:
+    - name: "KR-1"
+      display_name: "Korea (Seoul)"
+    - name: "KR-2" 
+      display_name: "Korea (Chuncheon)"
+  
+  # Kubernetes Service (NKS) management costs
+  kubernetes_service:
+    cluster_management_fee:
+      hourly_price: 60.0  # NKS 클러스터 관리 비용 (시간당)
+      description: "NKS 클러스터 관리 서비스 비용"
+    load_balancer:
+      hourly_price: 24.0  # 로드밸런서 비용 (시간당)
+      description: "NKS 로드밸런서 서비스 비용"
+  
+  # Sample pricing data (should be replaced with real API calls)
+  instance_types:
+    s-1vcpu-1gb:
+      name: "Standard 1vCPU 1GB"
+      cpu: 1
+      memory: 1024
+      hourly_price: 12.0
+    s-2vcpu-4gb:
+      name: "Standard 2vCPU 4GB"
+      cpu: 2
+      memory: 4096
+      hourly_price: 48.0
+    c-2vcpu-4gb:
+      name: "Compute 2vCPU 4GB"
+      cpu: 2
+      memory: 4096
+      hourly_price: 60.0
+    c-4vcpu-8gb:
+      name: "Compute 4vCPU 8GB"
+      cpu: 4
+      memory: 8192
+      hourly_price: 120.0
+    # Actual NCP instance types
+    SVR.VSVR.AMD.STAND.C002.M008.G003:
+      name: "NCP Standard 2vCPU 8GB"
+      cpu: 2
+      memory: 8192
+      hourly_price: 86.0
+
+nhn:
+  name: "NHN Cloud"
+  api_url: "https://api-compute.cloud.toast.com"
+  default_currency: "KRW"
+  regions:
+    - name: "KR1"
+      display_name: "Korea (Pangyo)"
+    - name: "KR2"
+      display_name: "Korea (Pyeongchon)"
+  
+  # Sample pricing data (should be replaced with real API calls)
+  instance_types:
+    m1.tiny:
+      name: "Tiny (1vCPU 1GB)"
+      cpu: 1
+      memory: 1024
+      hourly_price: 10.0
+    m1.small:
+      name: "Small (1vCPU 2GB)"
+      cpu: 1
+      memory: 2048
+      hourly_price: 18.0
+    m1.medium:
+      name: "Medium (2vCPU 4GB)"
+      cpu: 2
+      memory: 4096
+      hourly_price: 36.0
+    c1.small:
+      name: "Compute Small (1vCPU 2GB)"
+      cpu: 1
+      memory: 2048
+      hourly_price: 20.0
+    c1.medium:
+      name: "Compute Medium (2vCPU 4GB)"
+      cpu: 2
+      memory: 4096
+      hourly_price: 40.0
+
+# General settings
+settings:
+  cache_ttl: 3600  # Cache pricing data for 1 hour
+  default_duration: "1h"
+  supported_formats: ["table", "json", "yaml"]
+  
+# Currency conversion rates (if needed)
+currency:
+  usd_to_krw: 1300.0  # Example rate, should be updated regularly

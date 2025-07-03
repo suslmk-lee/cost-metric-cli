@@ -1,0 +1,209 @@
+{
+  "cluster_name": "nks_kr_suslmk-nks01_85346ace-fd1f-4b83-ad81-d5fbec97308c",
+  "context": "nks_kr_suslmk-nks01_85346ace-fd1f-4b83-ad81-d5fbec97308c",
+  "csp": {
+    "type": "naver",
+    "name": "Naver Cloud Platform",
+    "region": "1",
+    "detected": true
+  },
+  "nodes": [
+    {
+      "node_info": {
+        "name": "suslmk-node-w-3f51",
+        "instance_type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+        "region": "1",
+        "zone": "2",
+        "status": "Ready",
+        "created_at": "2025-06-17T09:02:36+09:00",
+        "labels": {
+          "beta.kubernetes.io/arch": "amd64",
+          "beta.kubernetes.io/instance-type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+          "beta.kubernetes.io/os": "linux",
+          "failure-domain.beta.kubernetes.io/region": "1",
+          "failure-domain.beta.kubernetes.io/zone": "2",
+          "kubernetes.io/arch": "amd64",
+          "kubernetes.io/hostname": "suslmk-node-w-3f51",
+          "kubernetes.io/os": "linux",
+          "ncloud.com/nks-nodepool": "suslmk-node",
+          "node.kubernetes.io/instance-type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+          "nodeId": "101787248",
+          "regionNo": "1",
+          "topology.kubernetes.io/region": "1",
+          "topology.kubernetes.io/zone": "2",
+          "zoneNo": "2"
+        },
+        "cpu": "2",
+        "memory": "8131600Ki",
+        "os_image": "Ubuntu 24.04.1 LTS",
+        "kernel_version": "6.8.0-58-generic"
+      },
+      "pricing_info": {
+        "instance_type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+        "region": "1",
+        "hourly_price": 86,
+        "currency": "KRW",
+        "cpu": 2,
+        "memory": 8192,
+        "updated_at": "2025-06-17T16:45:06.239952+09:00"
+      },
+      "hourly_cost": 86,
+      "daily_cost": 2064,
+      "monthly_cost": 61920,
+      "yearly_cost": 753360,
+      "custom_cost": 86,
+      "duration": 3600000000000
+    },
+    {
+      "node_info": {
+        "name": "suslmk-node-w-3f52",
+        "instance_type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+        "region": "1",
+        "zone": "2",
+        "status": "Ready",
+        "created_at": "2025-06-17T09:02:37+09:00",
+        "labels": {
+          "beta.kubernetes.io/arch": "amd64",
+          "beta.kubernetes.io/instance-type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+          "beta.kubernetes.io/os": "linux",
+          "failure-domain.beta.kubernetes.io/region": "1",
+          "failure-domain.beta.kubernetes.io/zone": "2",
+          "kubernetes.io/arch": "amd64",
+          "kubernetes.io/hostname": "suslmk-node-w-3f52",
+          "kubernetes.io/os": "linux",
+          "ncloud.com/nks-nodepool": "suslmk-node",
+          "node.kubernetes.io/instance-type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+          "nodeId": "101787251",
+          "regionNo": "1",
+          "topology.kubernetes.io/region": "1",
+          "topology.kubernetes.io/zone": "2",
+          "zoneNo": "2"
+        },
+        "cpu": "2",
+        "memory": "8131600Ki",
+        "os_image": "Ubuntu 24.04.1 LTS",
+        "kernel_version": "6.8.0-58-generic"
+      },
+      "pricing_info": {
+        "instance_type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+        "region": "1",
+        "hourly_price": 86,
+        "currency": "KRW",
+        "cpu": 2,
+        "memory": 8192,
+        "updated_at": "2025-06-17T16:45:06.23998+09:00"
+      },
+      "hourly_cost": 86,
+      "daily_cost": 2064,
+      "monthly_cost": 61920,
+      "yearly_cost": 753360,
+      "custom_cost": 86,
+      "duration": 3600000000000
+    },
+    {
+      "node_info": {
+        "name": "suslmk-node-w-3f53",
+        "instance_type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+        "region": "1",
+        "zone": "2",
+        "status": "Ready",
+        "created_at": "2025-06-17T09:02:38+09:00",
+        "labels": {
+          "beta.kubernetes.io/arch": "amd64",
+          "beta.kubernetes.io/instance-type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+          "beta.kubernetes.io/os": "linux",
+          "failure-domain.beta.kubernetes.io/region": "1",
+          "failure-domain.beta.kubernetes.io/zone": "2",
+          "kubernetes.io/arch": "amd64",
+          "kubernetes.io/hostname": "suslmk-node-w-3f53",
+          "kubernetes.io/os": "linux",
+          "ncloud.com/nks-nodepool": "suslmk-node",
+          "node.kubernetes.io/instance-type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+          "nodeId": "101787255",
+          "regionNo": "1",
+          "topology.kubernetes.io/region": "1",
+          "topology.kubernetes.io/zone": "2",
+          "zoneNo": "2"
+        },
+        "cpu": "2",
+        "memory": "8131600Ki",
+        "os_image": "Ubuntu 24.04.1 LTS",
+        "kernel_version": "6.8.0-58-generic"
+      },
+      "pricing_info": {
+        "instance_type": "SVR.VSVR.AMD.STAND.C002.M008.G003",
+        "region": "1",
+        "hourly_price": 86,
+        "currency": "KRW",
+        "cpu": 2,
+        "memory": 8192,
+        "updated_at": "2025-06-17T16:45:06.240005+09:00"
+      },
+      "hourly_cost": 86,
+      "daily_cost": 2064,
+      "monthly_cost": 61920,
+      "yearly_cost": 753360,
+      "custom_cost": 86,
+      "duration": 3600000000000
+    }
+  ],
+  "total_cost": {
+    "hourly_total": 258,
+    "daily_total": 6192,
+    "monthly_total": 185760,
+    "yearly_total": 2260080,
+    "custom_total": 258,
+    "duration": 3600000000000,
+    "currency": "KRW",
+    "by_type": {
+      "SVR.VSVR.AMD.STAND.C002.M008.G003": 258
+    },
+    "by_region": {
+      "1": 258
+    },
+    "by_status": {
+      "Ready": 258
+    }
+  },
+  "summary": {
+    "total_nodes": 3,
+    "running_nodes": 3,
+    "nodes_by_type": {
+      "SVR.VSVR.AMD.STAND.C002.M008.G003": 3
+    },
+    "nodes_by_region": {
+      "1": 3
+    },
+    "nodes_by_status": {
+      "Ready": 3
+    },
+    "total_cpu": 6,
+    "total_memory": 24980275200,
+    "avg_cost_per_node": 86,
+    "cost_per_cpu": 43,
+    "cost_per_gb": 11.217391304347826
+  },
+  "generated_at": "2025-06-17T16:45:06.239941+09:00",
+  "analysis_period": 3600000000000,
+  "optimization": {
+    "current_cost": 258,
+    "optimized_cost": 103.19999999999999,
+    "potential_saving": 154.8,
+    "suggestions": [
+      {
+        "type": "rightsizing",
+        "description": "일부 노드의 사용률이 낮을 수 있습니다. 인스턴스 타입을 더 작은 것으로 변경을 고려해보세요.",
+        "impact": "medium",
+        "saving": 51.6,
+        "effort": "medium"
+      },
+      {
+        "type": "spot_instances",
+        "description": "일부 워크로드를 스팟 인스턴스로 전환하여 비용을 절약할 수 있습니다.",
+        "impact": "high",
+        "saving": 103.2,
+        "effort": "medium"
+      }
+    ]
+  }
+}
