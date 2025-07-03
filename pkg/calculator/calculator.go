@@ -51,7 +51,7 @@ func (c *DefaultCostCalculator) CalculateNodeCost(nodeInfo k8s.NodeInfo, pricing
 }
 
 // CalculateClusterCost calculates the total cost for all nodes in a cluster
-func (c *DefaultCostCalculator) CalculateClusterCost(nodes []k8s.NodeInfo, pricingMap map[string]*PricingInfo, duration time.Duration) (*CostReport, error) {
+func (c *DefaultCostCalculator) CalculateClusterCost(cspInfo *csp.CSPInfo, nodes []k8s.NodeInfo, pricingMap map[string]*PricingInfo, duration time.Duration) (*CostReport, error) {
 	if len(nodes) == 0 {
 		return nil, fmt.Errorf("no nodes provided for cost calculation")
 	}
@@ -156,7 +156,7 @@ func (c *DefaultCostCalculator) CalculateClusterCost(nodes []k8s.NodeInfo, prici
 	}
 
 	// Calculate Kubernetes service costs
-	if err := c.calculateKubernetesServiceCosts(costBreakdown, duration, avgUptime); err != nil {
+	if err := c.calculateKubernetesServiceCosts(costBreakdown, cspInfo.Type, duration, avgUptime); err != nil {
 		// Log error but continue with node costs
 		fmt.Printf("Warning: Failed to calculate Kubernetes service costs: %v\n", err)
 	}
@@ -186,8 +186,8 @@ func (c *DefaultCostCalculator) CalculateClusterCost(nodes []k8s.NodeInfo, prici
 // GenerateOptimizationSuggestions generates cost optimization recommendations
 func (c *DefaultCostCalculator) GenerateOptimizationSuggestions(report *CostReport) *CostOptimization {
 	optimization := &CostOptimization{
-		CurrentCost:   report.TotalCost.CustomTotal,
-		Suggestions:   make([]OptimizationSuggestion, 0),
+		CurrentCost: report.TotalCost.CustomTotal,
+		Suggestions: make([]OptimizationSuggestion, 0),
 	}
 
 	// Suggestion 1: Check for underutilized nodes
@@ -305,14 +305,14 @@ func parseMemory(memoryStr string) int64 {
 }
 
 // calculateKubernetesServiceCosts calculates additional Kubernetes service costs
-func (c *DefaultCostCalculator) calculateKubernetesServiceCosts(costBreakdown *CostBreakdown, duration time.Duration, actualUptime time.Duration) error {
-	// Get Kubernetes service pricing from repository
-	if configRepo, ok := c.pricingRepo.(*ConfigPricingRepository); ok {
-		servicePricing, err := configRepo.GetKubernetesServicePricing(csp.CSPTypeNaver)
-		if err != nil {
-			return fmt.Errorf("failed to get Kubernetes service pricing: %w", err)
-		}
+func (c *DefaultCostCalculator) calculateKubernetesServiceCosts(costBreakdown *CostBreakdown, cspType csp.CSPType, duration time.Duration, actualUptime time.Duration) error {
+	// Get Kubernetes service pricing from repository using the interface
+	servicePricing, err := c.pricingRepo.GetKubernetesServicePricing(cspType)
+	if err != nil {
+		return fmt.Errorf("failed to get Kubernetes service pricing for %s: %w", cspType, err)
+	}
 
+	if servicePricing != nil {
 		// Calculate cluster management costs
 		clusterCost := c.calculateServiceCost(servicePricing.ClusterManagementFee, duration, actualUptime)
 		clusterCost.Description = servicePricing.ClusterManagementDescription

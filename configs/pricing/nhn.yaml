@@ -1,0 +1,31 @@
+name: "NHN Cloud"
+api_url: "https://api-compute.cloud.toast.com"
+default_currency: "KRW"
+regions:
+  - name: "KR1"
+    display_name: "Korea (Pangyo)"
+  - name: "KR2"
+    display_name: "Korea (Pyeongchon)"
+
+# Sample pricing data (should be replaced with real API calls)
+instance_types:
+  m1.tiny:
+    name: "Tiny (1vCPU 1GB)"
+    cpu: 1
+    memory: 1024
+    hourly_price: 10.0
+  m1.small:
+    name: "Small (1vCPU 2GB)"
+    cpu: 1
+    memory: 2048
+    hourly_price: 18.0
+  m1.medium:
+    name: "Medium (2vCPU 4GB)"
+    cpu: 2
+    memory: 4096
+    hourly_price: 36.0
+  c1.medium:
+    name: "Compute Medium (2vCPU 4GB)"
+    cpu: 2
+    memory: 4096
+    hourly_price: 40.0

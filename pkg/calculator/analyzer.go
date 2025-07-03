@@ -81,7 +81,7 @@ func (a *CostAnalyzer) AnalyzeCurrentContext(ctx context.Context, request CostAn
 	}
 
 	// Calculate cluster cost
-	report, err := a.calculator.CalculateClusterCost(nodes, pricingMap, request.Duration)
+	report, err := a.calculator.CalculateClusterCost(cspInfo, nodes, pricingMap, request.Duration)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate cluster cost: %w", err)
 	}
@@ -110,13 +110,12 @@ func (a *CostAnalyzer) GetSupportedCSPs() ([]CSPConfig, error) {
 	var configs []CSPConfig
 
 	for _, cspType := range supportedTypes {
-		if configRepo, ok := a.pricingRepo.(*ConfigPricingRepository); ok {
-			config, err := configRepo.GetCSPInfo(cspType)
-			if err != nil {
-				continue
-			}
-			configs = append(configs, *config)
+		config, err := a.pricingRepo.GetCSPInfo(cspType)
+		if err != nil {
+			fmt.Printf("Warning: could not retrieve config for CSP %s: %v\n", cspType, err)
+			continue
 		}
+		configs = append(configs, *config)
 	}
 
 	return configs, nil
@@ -151,12 +150,12 @@ func NewDefaultAnalyzer() (*CostAnalyzer, error) {
 
 // AnalysisOptions provides options for cost analysis
 type AnalysisOptions struct {
-	Context     string
-	Duration    time.Duration
-	Region      string
-	Verbose     bool
-	OutputPath  string
-	Format      string
+	Context    string
+	Duration   time.Duration
+	Region     string
+	Verbose    bool
+	OutputPath string
+	Format     string
 }
 
 // QuickAnalysis performs a quick cost analysis with minimal configuration

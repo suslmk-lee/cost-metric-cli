@@ -1,0 +1,40 @@
+name: "Naver Cloud Platform"
+api_url: "https://ncloud.apigw.ntruss.com"
+default_currency: "KRW"
+regions:
+  - name: "KR-1"
+    display_name: "Korea (Seoul)"
+  - name: "KR-2" 
+    display_name: "Korea (Chuncheon)"
+
+# Kubernetes Service (NKS) management costs
+kubernetes_service:
+  cluster_management_fee:
+    hourly_price: 60.0  # NKS 클러스터 관리 비용 (시간당)
+    description: "NKS 클러스터 관리 서비스 비용"
+  load_balancer:
+    hourly_price: 24.0  # 로드밸런서 비용 (시간당)
+    description: "NKS 로드밸런서 서비스 비용"
+
+# Sample pricing data (should be replaced with real API calls)
+instance_types:
+  s-1vcpu-1gb:
+    name: "Standard 1vCPU 1GB"
+    cpu: 1
+    memory: 1024
+    hourly_price: 12.0
+  s-2vcpu-4gb:
+    name: "Standard 2vCPU 4GB"
+    cpu: 2
+    memory: 4096
+    hourly_price: 48.0
+  c-2vcpu-4gb:
+    name: "Compute 2vCPU 4GB"
+    cpu: 2
+    memory: 4096
+    hourly_price: 60.0
+  SVR.VSVR.AMD.STAND.C002.M008.G003:
+    name: "NCP Standard 2vCPU 8GB"
+    cpu: 2
+    memory: 8192
+    hourly_price: 86.0

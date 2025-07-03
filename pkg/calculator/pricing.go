@@ -2,6 +2,9 @@ package calculator
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/minkyulee/cost-metric-cli/pkg/csp"
@@ -10,42 +13,64 @@ import (
 
 // ConfigPricingRepository implements PricingRepository using configuration files
 type ConfigPricingRepository struct {
-	config *viper.Viper
+	configs map[csp.CSPType]*viper.Viper
 }
 
 // NewConfigPricingRepository creates a new configuration-based pricing repository
-func NewConfigPricingRepository(configPath string) (*ConfigPricingRepository, error) {
-	v := viper.New()
-	v.SetConfigFile(configPath)
-	v.SetConfigType("yaml")
-	
-	if err := v.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("failed to read config file: %w", err)
+func NewConfigPricingRepository(configDir string) (*ConfigPricingRepository, error) {
+	files, err := os.ReadDir(configDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read config directory %s: %w", configDir, err)
 	}
 
+	configs := make(map[csp.CSPType]*viper.Viper)
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+
+		ext := filepath.Ext(file.Name())
+		if ext == ".yaml" || ext == ".yml" {
+			cspTypeStr := strings.TrimSuffix(file.Name(), ext)
+			cspType := csp.CSPType(cspTypeStr)
+
+			v := viper.New()
+			v.SetConfigFile(filepath.Join(configDir, file.Name()))
+			v.SetConfigType("yaml")
+
+			if err := v.ReadInConfig(); err != nil {
+				fmt.Printf("Warning: failed to read pricing config file %s: %v\n", file.Name(), err)
+				continue
+			}
+			configs[cspType] = v
+		}
+	}
+
+	if len(configs) == 0 {
+		return nil, fmt.Errorf("no valid pricing config files found in %s", configDir)
+	}
 	return &ConfigPricingRepository{
-		config: v,
+		configs: configs,
 	}, nil
 }
 
 // GetPricing retrieves pricing information for a specific instance type
 func (r *ConfigPricingRepository) GetPricing(cspType csp.CSPType, instanceType, region string) (*PricingInfo, error) {
-	cspKey := string(cspType)
-	
-	// Check if CSP exists in config
-	if !r.config.IsSet(cspKey) {
-		return nil, fmt.Errorf("CSP %s not found in configuration", cspType)
+	v, ok := r.configs[cspType]
+	if !ok {
+		return nil, fmt.Errorf("pricing configuration for CSP %s not found", cspType)
 	}
 
 	// Get instance types for the CSP
-	instanceTypesKey := fmt.Sprintf("%s.instance_types", cspKey)
-	if !r.config.IsSet(instanceTypesKey) {
+	instanceTypesKey := "instance_types"
+	if !v.IsSet(instanceTypesKey) {
 		return nil, fmt.Errorf("instance types not found for CSP %s", cspType)
 	}
 
 	// Get specific instance type
-	instanceKey := fmt.Sprintf("%s.instance_types.%s", cspKey, instanceType)
-	if !r.config.IsSet(instanceKey) {
+	instanceKey := fmt.Sprintf("%s.%s", instanceTypesKey, instanceType)
+	if !v.IsSet(instanceKey) {
 		return nil, fmt.Errorf("instance type %s not found for CSP %s", instanceType, cspType)
 	}
 
@@ -57,16 +82,15 @@ func (r *ConfigPricingRepository) GetPricing(cspType csp.CSPType, instanceType, 
 	}
 
 	// Get currency
-	currencyKey := fmt.Sprintf("%s.default_currency", cspKey)
-	pricingInfo.Currency = r.config.GetString(currencyKey)
+	pricingInfo.Currency = v.GetString("default_currency")
 	if pricingInfo.Currency == "" {
 		pricingInfo.Currency = "KRW"
 	}
 
 	// Get pricing details
-	pricingInfo.HourlyPrice = r.config.GetFloat64(fmt.Sprintf("%s.hourly_price", instanceKey))
-	pricingInfo.CPU = r.config.GetInt(fmt.Sprintf("%s.cpu", instanceKey))
-	pricingInfo.Memory = r.config.GetInt(fmt.Sprintf("%s.memory", instanceKey))
+	pricingInfo.HourlyPrice = v.GetFloat64(fmt.Sprintf("%s.hourly_price", instanceKey))
+	pricingInfo.CPU = v.GetInt(fmt.Sprintf("%s.cpu", instanceKey))
+	pricingInfo.Memory = v.GetInt(fmt.Sprintf("%s.memory", instanceKey))
 
 	if pricingInfo.HourlyPrice == 0 {
 		return nil, fmt.Errorf("pricing information not available for instance type %s", instanceType)
@@ -77,21 +101,20 @@ func (r *ConfigPricingRepository) GetPricing(cspType csp.CSPType, instanceType, 
 
 // GetAllPricing retrieves all pricing information for a CSP and region
 func (r *ConfigPricingRepository) GetAllPricing(cspType csp.CSPType, region string) (map[string]*PricingInfo, error) {
-	cspKey := string(cspType)
-	
-	if !r.config.IsSet(cspKey) {
-		return nil, fmt.Errorf("CSP %s not found in configuration", cspType)
+	v, ok := r.configs[cspType]
+	if !ok {
+		return nil, fmt.Errorf("pricing configuration for CSP %s not found", cspType)
 	}
 
-	instanceTypesKey := fmt.Sprintf("%s.instance_types", cspKey)
-	instanceTypes := r.config.GetStringMap(instanceTypesKey)
-	
+	instanceTypesKey := "instance_types"
+	instanceTypes := v.GetStringMap(instanceTypesKey)
+
 	if len(instanceTypes) == 0 {
 		return nil, fmt.Errorf("no instance types found for CSP %s", cspType)
 	}
 
 	pricingMap := make(map[string]*PricingInfo)
-	
+
 	for instanceType := range instanceTypes {
 		pricing, err := r.GetPricing(cspType, instanceType, region)
 		if err != nil {
@@ -113,15 +136,14 @@ func (r *ConfigPricingRepository) UpdatePricing(cspType csp.CSPType, region stri
 
 // GetSupportedInstanceTypes returns all supported instance types for a CSP
 func (r *ConfigPricingRepository) GetSupportedInstanceTypes(cspType csp.CSPType) ([]string, error) {
-	cspKey := string(cspType)
-	
-	if !r.config.IsSet(cspKey) {
-		return nil, fmt.Errorf("CSP %s not found in configuration", cspType)
+	v, ok := r.configs[cspType]
+	if !ok {
+		return nil, fmt.Errorf("pricing configuration for CSP %s not found", cspType)
 	}
 
-	instanceTypesKey := fmt.Sprintf("%s.instance_types", cspKey)
-	instanceTypes := r.config.GetStringMap(instanceTypesKey)
-	
+	instanceTypesKey := "instance_types"
+	instanceTypes := v.GetStringMap(instanceTypesKey)
+
 	var types []string
 	for instanceType := range instanceTypes {
 		types = append(types, instanceType)
@@ -132,25 +154,24 @@ func (r *ConfigPricingRepository) GetSupportedInstanceTypes(cspType csp.CSPType)
 
 // GetCSPInfo returns basic information about a CSP
 func (r *ConfigPricingRepository) GetCSPInfo(cspType csp.CSPType) (*CSPConfig, error) {
-	cspKey := string(cspType)
-	
-	if !r.config.IsSet(cspKey) {
-		return nil, fmt.Errorf("CSP %s not found in configuration", cspType)
+	v, ok := r.configs[cspType]
+	if !ok {
+		return nil, fmt.Errorf("pricing configuration for CSP %s not found", cspType)
 	}
 
 	config := &CSPConfig{
 		Type:     cspType,
-		Name:     r.config.GetString(fmt.Sprintf("%s.name", cspKey)),
-		APIUrl:   r.config.GetString(fmt.Sprintf("%s.api_url", cspKey)),
-		Currency: r.config.GetString(fmt.Sprintf("%s.default_currency", cspKey)),
+		Name:     v.GetString("name"),
+		APIUrl:   v.GetString("api_url"),
+		Currency: v.GetString("default_currency"),
 	}
 
 	// Get regions
-	regionsKey := fmt.Sprintf("%s.regions", cspKey)
-	if r.config.IsSet(regionsKey) {
+	regionsKey := "regions"
+	if v.IsSet(regionsKey) {
 		var regions []Region
-		regionsList := r.config.Get(regionsKey)
-		
+		regionsList := v.Get(regionsKey)
+
 		if regionSlice, ok := regionsList.([]interface{}); ok {
 			for _, regionItem := range regionSlice {
 				if regionMap, ok := regionItem.(map[string]interface{}); ok {
@@ -170,35 +191,34 @@ func (r *ConfigPricingRepository) GetCSPInfo(cspType csp.CSPType) (*CSPConfig, e
 
 // GetKubernetesServicePricing retrieves Kubernetes service pricing information
 func (r *ConfigPricingRepository) GetKubernetesServicePricing(cspType csp.CSPType) (*KubernetesServicePricing, error) {
-	cspKey := string(cspType)
-	
-	if !r.config.IsSet(cspKey) {
-		return nil, fmt.Errorf("CSP %s not found in configuration", cspType)
+	v, ok := r.configs[cspType]
+	if !ok {
+		return nil, fmt.Errorf("pricing configuration for CSP %s not found", cspType)
 	}
 
-	serviceKey := fmt.Sprintf("%s.kubernetes_service", cspKey)
-	if !r.config.IsSet(serviceKey) {
-		return nil, fmt.Errorf("Kubernetes service pricing not found for CSP %s", cspType)
+	serviceKey := "kubernetes_service"
+	if !v.IsSet(serviceKey) {
+		// Not an error, some CSPs may not have this pricing.
+		return nil, nil
 	}
 
 	pricing := &KubernetesServicePricing{
-		Currency: r.config.GetString(fmt.Sprintf("%s.default_currency", cspKey)),
+		Currency: v.GetString("default_currency"),
 	}
 
 	// Get cluster management fee
 	clusterKey := fmt.Sprintf("%s.cluster_management_fee", serviceKey)
-	if r.config.IsSet(clusterKey) {
-		pricing.ClusterManagementFee = r.config.GetFloat64(fmt.Sprintf("%s.hourly_price", clusterKey))
-		pricing.ClusterManagementDescription = r.config.GetString(fmt.Sprintf("%s.description", clusterKey))
+	if v.IsSet(clusterKey) {
+		pricing.ClusterManagementFee = v.GetFloat64(fmt.Sprintf("%s.hourly_price", clusterKey))
+		pricing.ClusterManagementDescription = v.GetString(fmt.Sprintf("%s.description", clusterKey))
 	}
 
 	// Get load balancer cost
 	lbKey := fmt.Sprintf("%s.load_balancer", serviceKey)
-	if r.config.IsSet(lbKey) {
-		pricing.LoadBalancerFee = r.config.GetFloat64(fmt.Sprintf("%s.hourly_price", lbKey))
-		pricing.LoadBalancerDescription = r.config.GetString(fmt.Sprintf("%s.description", lbKey))
+	if v.IsSet(lbKey) {
+		pricing.LoadBalancerFee = v.GetFloat64(fmt.Sprintf("%s.hourly_price", lbKey))
+		pricing.LoadBalancerDescription = v.GetString(fmt.Sprintf("%s.description", lbKey))
 	}
-
 	return pricing, nil
 }
 

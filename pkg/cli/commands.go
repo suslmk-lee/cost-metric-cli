@@ -261,29 +261,30 @@ func runGenerateReport(cmd *cobra.Command) error {
 
 // getAnalyzer creates and returns a cost analyzer
 func getAnalyzer() (*calculator.CostAnalyzer, error) {
-	// Try multiple possible config paths
+	// Try multiple possible config directory paths
 	possiblePaths := []string{
-		filepath.Join("configs", "pricing.yaml"),
-		filepath.Join("..", "configs", "pricing.yaml"),
-		filepath.Join(".", "configs", "pricing.yaml"),
+		filepath.Join("configs", "pricing"),
+		filepath.Join("..", "configs", "pricing"),
+		filepath.Join(".", "configs", "pricing"),
 	}
 
 	// Find the executable directory and try relative to it
 	if execPath, err := os.Executable(); err == nil {
 		execDir := filepath.Dir(execPath)
 		possiblePaths = append(possiblePaths,
-			filepath.Join(execDir, "..", "configs", "pricing.yaml"),
-			filepath.Join(filepath.Dir(execDir), "configs", "pricing.yaml"),
+			filepath.Join(execDir, "configs", "pricing"),
+			filepath.Join(execDir, "..", "configs", "pricing"),
+			filepath.Join(filepath.Dir(execDir), "configs", "pricing"),
 		)
 	}
 
-	for _, configPath := range possiblePaths {
-		if _, err := os.Stat(configPath); err == nil {
-			return calculator.NewCostAnalyzer(configPath)
+	for _, configDir := range possiblePaths {
+		if stat, err := os.Stat(configDir); err == nil && stat.IsDir() {
+			return calculator.NewCostAnalyzer(configDir)
 		}
 	}
 
-	return nil, fmt.Errorf("pricing.yaml 설정 파일을 찾을 수 없습니다. 다음 경로에서 확인하세요: %v", possiblePaths)
+	return nil, fmt.Errorf("pricing 설정 디렉토리를 찾을 수 없습니다. 다음 경로에서 'configs/pricing' 디렉토리를 확인하세요: %v", possiblePaths)
 }
 
 // parseDuration parses duration string (1h, 1d, 1m, 1y)
