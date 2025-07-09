@@ -10,17 +10,20 @@ import (
 )
 
 type NodeInfo struct {
-	Name         string            `json:"name"`
-	InstanceType string            `json:"instance_type"`
-	Region       string            `json:"region"`
-	Zone         string            `json:"zone"`
-	Status       string            `json:"status"`
-	CreatedAt    time.Time         `json:"created_at"`
-	Labels       map[string]string `json:"labels"`
-	CPU          string            `json:"cpu"`
-	Memory       string            `json:"memory"`
-	OSImage      string            `json:"os_image"`
-	KernelVersion string           `json:"kernel_version"`
+	Name          string            `json:"name"`
+	InstanceType  string            `json:"instance_type"`
+	Region        string            `json:"region"`
+	Zone          string            `json:"zone"`
+	Status        string            `json:"status"`
+	CreatedAt     time.Time         `json:"created_at"`
+	Labels        map[string]string `json:"labels"`
+	CPU           string            `json:"cpu"`
+	Memory        string            `json:"memory"`
+	OSImage       string            `json:"os_image"`
+	KernelVersion string            `json:"kernel_version"`
+	ProviderID    string            `json:"provider_id"`
+	InternalIP    string            `json:"internal_ip"`
+	ExternalIP    string            `json:"external_ip"`
 }
 
 // GetNodes retrieves all nodes from the Kubernetes cluster
@@ -57,6 +60,21 @@ func convertToNodeInfo(node *corev1.Node) NodeInfo {
 		CreatedAt: node.CreationTimestamp.Time,
 		Labels:    node.Labels,
 		Status:    getNodeStatus(node),
+	}
+
+	// Extract provider ID if available
+	if node.Spec.ProviderID != "" {
+		nodeInfo.ProviderID = node.Spec.ProviderID
+	}
+
+	// Extract IP addresses from node status
+	for _, address := range node.Status.Addresses {
+		switch address.Type {
+		case corev1.NodeInternalIP:
+			nodeInfo.InternalIP = address.Address
+		case corev1.NodeExternalIP:
+			nodeInfo.ExternalIP = address.Address
+		}
 	}
 
 	// Extract instance type from labels (varies by CSP)
