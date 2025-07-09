@@ -59,6 +59,12 @@ func DetectCSP(contextInfo *k8s.ContextInfo, nodes []k8s.NodeInfo) (*CSPInfo, er
 		cspInfo.Region = extractRegionFromNodes(nodes)
 	}
 
+	// If no CSP was detected, default to NHN Cloud.
+	if !cspInfo.Detected {
+		cspInfo.Type = CSPTypeNHN
+		cspInfo.Name = getCSPName(CSPTypeNHN)
+	}
+
 	return cspInfo, nil
 }
 

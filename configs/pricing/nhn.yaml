@@ -7,25 +7,99 @@ regions:
   - name: "KR2"
     display_name: "Korea (Pyeongchon)"
 
-# Sample pricing data (should be replaced with real API calls)
 instance_types:
-  m1.tiny:
-    name: "Tiny (1vCPU 1GB)"
+  t2.c1m1:
+    name: "Standard (1vCPU 1GB)"
     cpu: 1
     memory: 1024
-    hourly_price: 10.0
-  m1.small:
-    name: "Small (1vCPU 2GB)"
+    hourly_price: 24
+  m2.c1m2:
+    name: "Standard (1vCPU 2GB)"
     cpu: 1
     memory: 2048
-    hourly_price: 18.0
-  m1.medium:
-    name: "Medium (2vCPU 4GB)"
+    hourly_price: 43
+  m2.c2m4:
+    name: "Standard (2vCPU 4GB)"
     cpu: 2
     memory: 4096
-    hourly_price: 36.0
-  c1.medium:
-    name: "Compute Medium (2vCPU 4GB)"
+    hourly_price: 93
+  m2.c4m8:
+    name: "Standard (4vCPU 8GB)"
+    cpu: 4
+    memory: 8192
+    hourly_price: 196
+  m2.c8m16:
+    name: "Standard (8vCPU 16GB)"
+    cpu: 8
+    memory: 16384
+    hourly_price: 399
+  m2.c16m32:
+    name: "Standard (16vCPU 32GB)"
+    cpu: 16
+    memory: 32768
+    hourly_price: 807
+  c2.c2m2:
+    name: "Compute Optimized (2vCPU 2GB)"
     cpu: 2
+    memory: 2048
+    hourly_price: 57
+  c2.c4m4:
+    name: "Compute Optimized (4vCPU 4GB)"
+    cpu: 4
     memory: 4096
-    hourly_price: 40.0
+    hourly_price: 121
+  c2.c8m8:
+    name: "Compute Optimized (8vCPU 8GB)"
+    cpu: 8
+    memory: 8192
+    hourly_price: 250
+  c2.c16m16:
+    name: "Compute Optimized (16vCPU 16GB)"
+    cpu: 16
+    memory: 16384
+    hourly_price: 509
+  r2.c2m8:
+    name: "Memory Optimized (2vCPU 8GB)"
+    cpu: 2
+    memory: 8192
+    hourly_price: 128
+  r2.c4m16:
+    name: "Memory Optimized (4vCPU 16GB)"
+    cpu: 4
+    memory: 16384
+    hourly_price: 264
+  r2.c8m32:
+    name: "Memory Optimized (8vCPU 32GB)"
+    cpu: 8
+    memory: 32768
+    hourly_price: 534
+  r2.c8m64:
+    name: "Memory Optimized (8vCPU 64GB)"
+    cpu: 8
+    memory: 65536
+    hourly_price: 674
+  x1.c16m64:
+    name: "Performance Optimized (16vCPU 64GB)"
+    cpu: 16
+    memory: 65536
+    hourly_price: 1029
+  x1.c16m128:
+    name: "Performance Optimized (16vCPU 128GB)"
+    cpu: 16
+    memory: 131072
+    hourly_price: 1345
+  x1.c32m128:
+    name: "Performance Optimized (32vCPU 128GB)"
+    cpu: 32
+    memory: 131072
+    hourly_price: 2058
+  x1.c32m256:
+    name: "Performance Optimized (32vCPU 256GB)"
+    cpu: 32
+    memory: 262144
+    hourly_price: 2775
+  x1.c64m256:
+    name: "Performance Optimized (64vCPU 256GB)"
+    cpu: 64
+    memory: 262144
+    hourly_price: 4201

@@ -90,10 +90,22 @@ func switchContext() {
 		return
 	}
 
+	// 현재 활성화된 컨텍스트 이름을 가져옵니다.
+	currentCtxCmd := exec.Command("kubectl", "config", "current-context")
+	currentCtxBytes, err := currentCtxCmd.Output()
+	currentContext := ""
+	if err == nil {
+		currentContext = strings.TrimSpace(string(currentCtxBytes))
+	}
+
 	// 2. 사용자에게 선택할 수 있도록 컨텍스트 목록을 출력합니다.
 	fmt.Println("\n사용 가능한 컨텍스트:")
 	for i, context := range contexts {
-		fmt.Printf("%d. %s\n", i+1, context)
+		prefix := "    " // 정렬을 위한 기본 접두사 (공백 4칸)
+		if context == currentContext {
+			prefix = "(*) " // 현재 컨텍스트 표시
+		}
+		fmt.Printf("%s%d. %s\n", prefix, i+1, context)
 	}
 
 	// 3. 사용자로부터 컨텍스트 번호를 입력받습니다.
@@ -111,6 +123,12 @@ func switchContext() {
 
 	// 4. 선택된 컨텍스트로 변경하는 "kubectl config use-context" 명령어를 실행합니다.
 	selectedContext := contexts[choice-1]
+
+	// 이미 선택된 컨텍스트를 다시 선택한 경우, 변경 없이 메시지만 표시합니다.
+	if selectedContext == currentContext {
+		fmt.Printf("✅ 이미 '%s' 컨텍스트를 사용 중입니다.\n", selectedContext)
+		return
+	}
 
 	useCmd := exec.Command("kubectl", "config", "use-context", selectedContext)
 	// 더 나은 오류 리포팅을 위해 stderr를 캡처합니다.
